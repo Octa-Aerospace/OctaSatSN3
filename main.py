@@ -2,7 +2,7 @@ import csv
 from time import sleep
 from datetime import datetime
 from modules.Buzzer import Buzzer
-from modules.Camera import Camera
+#from modules.Camera import Camera
 from modules.GY91 import GY91
 from modules.GPS import GPS
 from modules.BME280 import BME280
@@ -64,11 +64,14 @@ class OctaSat:
     self.buzzer.destroy()
 
 if __name__ == "__main__":
-  device = OctaSat()
-  device.init()
+    device = OctaSat()
+    device.init()
 
-  for i in range(20):
-    device.read_data()
-    device.save_data()
-    sleep(0.5)
-  device.kill()
+    try:
+        while True:
+            device.read_data()
+            device.save_data()
+            sleep(0.5)
+    except KeyboardInterrupt:
+        print(f'\n[!] Process interrupted')
+        device.kill()
