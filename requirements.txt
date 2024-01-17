@@ -1,0 +1,11 @@
+uvicorn
+fastapi
+imusensor
+easydict
+adafruit-circuitpython-bme280
+adafruit_rfm9x
+smbus
+pynmea2
+board
+RPi.GPIO
+sys
