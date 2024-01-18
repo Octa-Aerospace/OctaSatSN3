@@ -16,8 +16,8 @@ def read_csv(file_path):
 @app.get("/", response_model=List[dict])
 async def get_historical_data():
     data = read_csv("data.csv")
-    last_20_records = data[-20:]  # Get the last 20 records
-    return last_20_records
+    # last_20_records = data[-20:]  # Get the last 20 records
+    return data
 
 @app.get('*', include_in_schema=False)
 async def not_found():
