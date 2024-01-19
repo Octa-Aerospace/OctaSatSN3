@@ -8,6 +8,7 @@ from modules.GY91 import GY91
 from modules.GPS import GPS
 from modules.BME280 import BME280
 import os
+from modules.LoRa.lora import LoRa
 
 class OctaSat:
   def __init__(self):
@@ -26,6 +27,7 @@ class OctaSat:
     self.gy91 = GY91(self.I2C_ADDRESS)
     self.gps = GPS(port=self.GPS_PORT)
     self.bme280 = BME280()
+    self.lora = LoRa()
     # self.camera = Camera()
     # self.e32 = E32()
 
@@ -66,8 +68,17 @@ class OctaSat:
       writer.writerows(rows)
 
 
-  def send_data(self):
-    pass
+  def receive_data(self):
+    data = self.lora.receive_packet_radio()[2].strip().split(',')
+    self.data = {
+      'timestamp': datetime.now(),
+      'latitude': data[0],
+      'longitude': data[1],
+      'altitude': data[2],
+      'temperature': data[3],
+      'humidity': data[4],
+      'pressure': data[5]
+    }
 
   def kill(self):
     self.buzzer.destroy()
@@ -82,9 +93,10 @@ if __name__ == "__main__":
             if GPIO.wait_for_edge(device.BUTTON_GPIO, GPIO.RISING):
                while True:
 
-                device.read_data()
+                # device.read_data()
+                device.receive_data()
                 device.save_data()
-                sleep(0.5)
+                sleep()
 
     except KeyboardInterrupt:
         print(f'\n[!] Process interrupted')
