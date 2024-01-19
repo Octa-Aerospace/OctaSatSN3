@@ -1,3 +1,4 @@
+import RPi.GPIO as GPIO
 import csv
 from time import sleep
 from datetime import datetime
@@ -10,10 +11,16 @@ import os
 
 class OctaSat:
   def __init__(self):
-    self.BUZZER_PIN = 12
-    self.I2C_ADDRESS = 0x68
-    self.GPS_PORT = '/dev/ttyAMA0'
-    self.data = {}
+        self.BUZZER_PIN = 12
+        self.I2C_ADDRESS = 0x68
+        self.GPS_PORT = '/dev/ttyAMA0'
+        self.BUTTON_GPIO = 5  
+        self.data = {}
+        self.setup_button()
+
+  def setup_button(self):
+        GPIO.setup(self.BUTTON_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+
 
   def init(self):
     self.gy91 = GY91(self.I2C_ADDRESS)
@@ -31,6 +38,8 @@ class OctaSat:
     # mag = self.gy91.get_mag()
     latitude, longitude = self.gps.read_data()
     temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
+    print(f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}')
+    print('\n')
 
     self.data = {
       # 'accelerometer': accel,
@@ -67,6 +76,20 @@ if __name__ == "__main__":
     device = OctaSat()
     device.init()
 
+
+    try:
+        while True:
+            if GPIO.wait_for_edge(device.BUTTON_GPIO, GPIO.RISING):
+               while True:
+
+                device.read_data()
+                device.save_data()
+                sleep(0.5)
+
+    except KeyboardInterrupt:
+        print(f'\n[!] Process interrupted')
+        device.kill()
+"""""
     try:
         while True:
             device.read_data()
@@ -75,3 +98,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print(f'\n[!] Process interrupted')
         device.kill()
+"""""
