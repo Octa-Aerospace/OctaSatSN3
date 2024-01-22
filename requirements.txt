@@ -3,7 +3,7 @@ fastapi
 imusensor
 easydict
 adafruit-circuitpython-bme280
-adafruit_rfm9x
+adafruit-circuitpython-rfm9x
 smbus
 pynmea2
 board
