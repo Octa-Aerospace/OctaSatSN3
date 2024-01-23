@@ -34,31 +34,27 @@ class OctaSat:
     self.buzzer = Buzzer(self.BUZZER_PIN)
     self.buzzer.init()
 
-  def read_data(self):
-    # accel = self.gy91.get_accel()
-    # gyro = self.gy91.get_gyro()
-    # mag = self.gy91.get_mag()
-    latitude, longitude = self.gps.read_data()
-    temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
-    print(f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}')
-    print('\n')
-
-    self.data = {
-      # 'accelerometer': accel,
-      # 'gyroscope': gyro,
-      # 'magnetometer': mag,
-      'timestamp': datetime.now(),
-      'latitude': latitude,
-      'longitude': longitude,
-      'altitude': altitude,
-      'temperature': temperature,
-      'humidity': humidity,
-      'pressure': pressure
-    }
+  def safe_float(self, value):
+    if value is None or value.lower() == 'none':
+      return None
+    else:
+        return float(value)
 
   def save_data(self):
+    data = self.lora.receive_packet_radio()
     headers = ['timestamp', 'latitude', 'longitude', 'altitude', 'temperature', 'humidity', 'pressure']
-    rows = [list(self.data.values())]
+        
+    # Obtener los valores específicos de la estructura data
+    lines = data.split('\n')  # Divide la cadena en líneas
+    latitude = self.safe_float(lines[0].split(': ')[1]) if 'Latitude' in data else None
+    longitude = self.safe_float(lines[1].split(': ')[1]) if 'Longitude' in data else None
+    altitude = self.safe_float(lines[5].split(': ')[1]) if 'Altitude' in data else None
+    temperature = self.safe_float(lines[2].split(': ')[1]) if 'Temperature' in data else None
+    humidity = self.safe_float(lines[3].split(': ')[1]) if 'Humidity' in data else None
+    pressure = self.safe_float(lines[4].split(': ')[1]) if 'Pressure' in data else None
+
+    values = [datetime.now(), latitude, longitude, altitude, temperature, humidity, pressure]
+    rows = [values]
 
     if not os.path.exists('data.csv'):
       rows.insert(0, headers)
@@ -69,16 +65,9 @@ class OctaSat:
 
 
   def receive_data(self):
-    data = self.lora.receive_packet_radio()[2].strip().split(',')
-    self.data = {
-      'timestamp': datetime.now(),
-      'latitude': data[0],
-      'longitude': data[1],
-      'altitude': data[2],
-      'temperature': data[3],
-      'humidity': data[4],
-      'pressure': data[5]
-    }
+    data = self.lora.receive_packet_radio()
+    print(f'[!] Packet received >> {data}') #uncomment to see what's the data 
+   
 
   def kill(self):
     self.buzzer.destroy()
@@ -92,15 +81,15 @@ if __name__ == "__main__":
         while True:
             if GPIO.wait_for_edge(device.BUTTON_GPIO, GPIO.RISING):
                while True:
-
-                # device.read_data()
                 device.receive_data()
                 device.save_data()
-                sleep()
+                sleep(0.5)
 
     except KeyboardInterrupt:
         print(f'\n[!] Process interrupted')
         device.kill()
+
+#Uncomment if you don't want to run the program with the button
 """""
     try:
         while True:
