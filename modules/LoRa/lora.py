@@ -13,20 +13,21 @@ class LoRa:
     self.spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
     self.rfm9x = adafruit_rfm9x.RFM9x(self.spi, self.CS, self.RESET, self.RADIO_FREQ_MHZ, baudrate=self.BAUDRATE)
 
-  def begin_packet_radio(self, payload='Hello world!'):
+  def begin_packet_radio(self, payload):
     if len(payload) > 252:
       return "[ ! ] You can only send a message up to 252 bytes in length at a time!"
 
     self.rfm9x.tx_power = 23 # min 5dB; max 23dB
 
     try:
-      self.rfm9x.send(bytes('heyyy', "UTF-8"))
-      print(f'[ OK ] Packet sent! >> {payload}')
+      response = self.rfm9x.send(bytes(payload, "utf-8"))
+      print(f'[ ! ] response {response}') #True if the packet was effectively sent
+      if response:
+        print(f'[ ! ] Packet sent >> {payload}')
     except Exception as e:
       print(f'[ ! ] {e}')
       print(f'[ ! ] Packet not sent! >> {payload}')
-      return False
-    return True
+
   
   def receive_packet_radio(self):
     self.rfm9x.tx_power = 23
@@ -41,7 +42,7 @@ class LoRa:
         print(f'[ OK ] Packet received! >> {packet_text}')
         print(f'[ OK ] RSSI: {rssi}')
         print(f'[ OK ] Times: {times}\n')
-        return packet, rssi, packet_text # RAW bytes, signal strength, ASCII
+        return packet_text 
 
     else:
         return '[ ! ] The conection is interrupted.'
