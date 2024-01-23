@@ -40,8 +40,8 @@ class OctaSat:
         # mag = self.gy91.get_mag()
         latitude, longitude = self.gps.read_data()
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
-        print(f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}')
-        print('\n')
+        #print(f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}')
+        #print('\n')
 
         self.data = {
             # 'accelerometer': accel,
@@ -69,8 +69,11 @@ class OctaSat:
             writer.writerows(rows)
 
     def send_data(self):
-        self.lora.begin_packet_radio(
-            f'{self.data["latitude"]}, {self.data["longitude"]}, {self.data["altitude"]}, {self.data["temperature"]}, {self.data["humidity"]}, {self.data["pressure"]}')
+        latitude, longitude = self.gps.read_data()
+        temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
+        payload = f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}'
+        self.lora.begin_packet_radio(payload)
+
 
     def kill(self):
         self.buzzer.destroy()
@@ -87,18 +90,9 @@ if __name__ == "__main__":
 
                     device.read_data()
                     device.save_data()
+                    device.send_data()
                     sleep(0.5)
 
     except KeyboardInterrupt:
         print(f'\n[!] Process interrupted')
         device.kill()
-"""""
-    try:
-        while True:
-            device.read_data()
-            device.save_data()
-            sleep(0.5)
-    except KeyboardInterrupt:
-        print(f'\n[!] Process interrupted')
-        device.kill()
-"""""
