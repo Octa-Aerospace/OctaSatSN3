@@ -24,7 +24,7 @@ class OctaSat:
         GPIO.setup(self.BUTTON_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def init(self):
-        self.gy91 = GY91(self.I2C_ADDRESS)
+        # self.gy91 = GY91(self.I2C_ADDRESS)
         self.gps = GPS(port=self.GPS_PORT)
         self.bme280 = BME280()
         self.lora = LoRa()
