@@ -1,14 +1,16 @@
-import RPi.GPIO as GPIO
+import os
 import csv
 from time import sleep
 from datetime import datetime
+import RPi.GPIO as GPIO
+#
+from db.index import DatabaseManager
 from modules.Buzzer import Buzzer
 # from modules.Camera import Camera
 from modules.GY91 import GY91
 from modules.GPS import GPS
 from modules.BME280 import BME280
 from modules.LoRa.lora import LoRa
-import os
 
 
 class OctaSat:
@@ -19,6 +21,14 @@ class OctaSat:
         self.BUTTON_GPIO = 5
         self.data = {}
         self.setup_button()
+        self.db = DatabaseManager(
+            host="",
+            user="",
+            password="",
+            database=""
+        )
+        self.db.connect()
+
 
     def setup_button(self):
         GPIO.setup(self.BUTTON_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -35,50 +45,37 @@ class OctaSat:
         self.buzzer.init()
 
     def read_data(self):
-        # accel = self.gy91.get_accel()
-        # gyro = self.gy91.get_gyro()
-        # mag = self.gy91.get_mag()
-        # latitude, longitude = self.gps.read_data()
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
-        #print(f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}')
-        #print('\n')
-
         self.data = {
-            # 'accelerometer': accel,
-            # 'gyroscope': gyro,
-            # 'magnetometer': mag,
             'timestamp': datetime.now(),
             'latitude': -1,
             'longitude': -1,
             'altitude': altitude,
             'temperature': temperature,
             'humidity': humidity,
-            'pressure': pressure
+            'pressure': pressure,
+            'accel_x': 0,
+            'accel_y': 0,
+            'accel_z': 0,
+            'gyro_x': 0,
+            'gyro_y': 0,
+            'gyro_z': 0,
+            'mag_x': 0,
+            'mag_y': 0,
+            'mag_z': 0
         }
 
     def save_data(self):
-        headers = ['timestamp', 'latitude', 'longitude',
-                   'altitude', 'temperature', 'humidity', 'pressure']
-        rows = [list(self.data.values())]
-
-        if not os.path.exists('data.csv'):
-            rows.insert(0, headers)
-
-        with open('data.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(rows)
+        self.db.insert_telemetry_data(self.data)
 
     def send_data(self):
-        # latitude, longitude = self.gps.read_data()
         latitude, longitude = -1, -1
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
         payload = f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}'
         self.lora.begin_packet_radio(payload)
 
-
     def kill(self):
         self.buzzer.destroy()
-
 
 if __name__ == "__main__":
     device = OctaSat()
@@ -86,12 +83,10 @@ if __name__ == "__main__":
 
     try:
         while True:
-            # if GPIO.wait_for_edge(device.BUTTON_GPIO, GPIO.RISING):
-                # while True:
-                    device.read_data()
-                    device.save_data()
-                    device.send_data()
-                    sleep(0.5)
+            device.read_data()
+            device.save_data()
+            device.send_data()
+            sleep(0.5)
 
     except KeyboardInterrupt:
         print(f'\n[!] Process interrupted')
