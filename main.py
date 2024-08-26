@@ -3,6 +3,7 @@ import csv
 from time import sleep
 from datetime import datetime
 import RPi.GPIO as GPIO
+import pytz
 #
 from db.index import DatabaseManager
 from modules.Buzzer import Buzzer
@@ -21,11 +22,12 @@ class OctaSat:
         self.BUTTON_GPIO = 5
         self.data = {}
         self.setup_button()
+        self.timezone = pytz.timezone("America/Santiago")
         self.db = DatabaseManager(
-            host="",
-            user="",
-            password="",
-            database=""
+            host="195.35.34.92",
+            user="u446427130_dev",
+            password="=z1sN/1l&K",
+            database="u446427130_octasat"
         )
         self.db.connect()
 
@@ -47,7 +49,7 @@ class OctaSat:
     def read_data(self):
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
         self.data = {
-            'timestamp': datetime.now(),
+            'timestamp': datetime.now(self.timezone),
             'latitude': -1,
             'longitude': -1,
             'altitude': altitude,

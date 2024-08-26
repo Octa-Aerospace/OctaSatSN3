@@ -16,6 +16,7 @@ adafruit-blinka = "^8.47.0"
 adafruit-circuitpython-bme280 = "^2.6.25"
 adafruit-circuitpython-rfm9x = "^2.2.16"
 mysql-connector-python = "^9.0.0"
+pytz = "^2024.1"
 
 
 [build-system]

@@ -242,6 +242,17 @@ files = [
 cp2110 = ["hidapi"]
 
 [[package]]
+name = "pytz"
+version = "2024.1"
+description = "World timezone definitions, modern and historical"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2024.1-py2.py3-none-any.whl", hash = "sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319"},
+    {file = "pytz-2024.1.tar.gz", hash = "sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812"},
+]
+
+[[package]]
 name = "pyusb"
 version = "1.2.1"
 description = "Python USB access module"
@@ -308,4 +319,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8a74c52a6acaf157bf043264b2f15e85274cb97436d3c424412d8000c34472d8"
+content-hash = "ced18b56fe06a9e637b63ee54dd3de75caf6bf29c88f68a84c2477f19a458bce"
