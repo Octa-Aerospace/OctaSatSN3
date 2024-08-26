@@ -48,8 +48,8 @@ class OctaSat:
             # 'gyroscope': gyro,
             # 'magnetometer': mag,
             'timestamp': datetime.now(),
-            'latitude': latitude,
-            'longitude': longitude,
+            'latitude': -1,
+            'longitude': -1,
             'altitude': altitude,
             'temperature': temperature,
             'humidity': humidity,
@@ -70,6 +70,7 @@ class OctaSat:
 
     def send_data(self):
         # latitude, longitude = self.gps.read_data()
+        latitude, longitude = -1, -1
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
         payload = f'Latitude: {latitude}\nLongitude: {longitude}\nTemperature: {temperature}\nHumidity: {humidity}\nPressure: {pressure}\nAltitude: {altitude}'
         self.lora.begin_packet_radio(payload)
@@ -85,8 +86,8 @@ if __name__ == "__main__":
 
     try:
         while True:
-            if GPIO.wait_for_edge(device.BUTTON_GPIO, GPIO.RISING):
-                while True:
+            # if GPIO.wait_for_edge(device.BUTTON_GPIO, GPIO.RISING):
+                # while True:
                     device.read_data()
                     device.save_data()
                     device.send_data()
