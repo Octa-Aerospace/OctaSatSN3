@@ -1,5 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
+from time import sleep
+#
+from seeder import get_random_telemetry
 
 class DatabaseManager:
     def __init__(self, host, user, password, database):
@@ -55,6 +58,17 @@ class DatabaseManager:
                 print("Telemetry data inserted successfully")
         except Error as e:
             print(f"Failed to insert data into MySQL table: {e}")
+
+    def get_dummy_telemetry(self):
+        return get_random_telemetry()
+
+    def seed_with_random(self, num_records):
+        self.connect()
+        for _ in range(num_records):
+            telemetry_data = get_random_telemetry()
+            self.insert_telemetry_data(telemetry_data)
+            sleep(2)
+        self.close()
 
     def close(self):
         if self.connection.is_connected():

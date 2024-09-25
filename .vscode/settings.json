@@ -1,5 +1,6 @@
 {
   "conventionalCommits.scopes": [
-    "db"
+    "db",
+    "telemetry"
   ]
 }
