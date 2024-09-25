@@ -9,3 +9,4 @@ pynmea2
 board
 RPi.GPIO
 sys
+python-dotenv
