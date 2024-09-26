@@ -2,16 +2,13 @@ import os
 import csv
 from time import sleep
 from datetime import datetime
-# import pytz # OFFLINE-TEST
+import pytz
 from dotenv import load_dotenv
 #
 from db.index import DatabaseManager
-from modules.Buzzer import Buzzer
 # from modules.Camera import Camera
 # from modules.GY91 import GY91
 # from modules.GPS import GPS
-from modules.BME280 import BME280
-from modules.LoRa.lora import LoRa
 
 load_dotenv()
 
@@ -25,7 +22,7 @@ class OctaSat:
         # self.GPS_PORT = '/dev/ttyAMA0'
         self.BUTTON_GPIO = 5
         self.data = {}
-        # self.timezone = pytz.timezone("America/Santiago") # OFFLINE-TEST 
+        self.timezone = pytz.timezone("America/Santiago")
 
         if not self.dummy:
             self.setup_button()
@@ -45,13 +42,14 @@ class OctaSat:
     def init(self):
         # self.gy91 = GY91(self.I2C_ADDRESS)
         # self.gps = GPS(port=self.GPS_PORT)
-        self.bme280 = BME280()
-        self.lora = LoRa()
         # self.camera = Camera()
         # self.e32 = E32()
 
-        self.buzzer = Buzzer(self.BUZZER_PIN)
-        self.buzzer.init()
+        if not self.dummy:
+            self.lora = LoRa()
+            self.bme280 = BME280()
+            self.buzzer = Buzzer(self.BUZZER_PIN)
+            self.buzzer.init()
 
     def make_read(self):
         if self.dummy:
@@ -86,7 +84,7 @@ class OctaSat:
 
     def send_payload(self):
         if self.dummy:
-            return print(f'[ ! ] Dummy data >>\n{self.data}')
+            return print(f'[ ! ] Dummy data >>\n{self.data}', end="\n\n")
         
         latitude, longitude = -1, -1
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
@@ -94,11 +92,18 @@ class OctaSat:
         self.lora.begin_packet_radio(payload)
 
     def kill(self):
-        self.buzzer.destroy()
+        if not self.dummy:
+            self.buzzer.destroy()
+        else:
+            print("[!] Buzzer -- cleaning up GPIO")
 
 if __name__ == "__main__":
     if not dummy:
         import RPi.GPIO as GPIO
+        #
+        from modules.Buzzer import Buzzer
+        from modules.BME280 import BME280
+        from modules.LoRa.lora import LoRa
 
     device = OctaSat(dummy)
     device.init()
@@ -108,7 +113,7 @@ if __name__ == "__main__":
             device.make_read()
             device.save_data()
             device.send_payload()
-            sleep(0.5)
+            sleep(1)
 
     except KeyboardInterrupt:
         print(f'\n[!] Process interrupted')

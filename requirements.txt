@@ -10,3 +10,4 @@ board
 RPi.GPIO
 sys
 python-dotenv
+mysql-connector-python

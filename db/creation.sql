@@ -4,7 +4,7 @@ USE OctaSatDB;
 
 CREATE TABLE telemetry_data (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    timestamp DATETIME NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     latitude DECIMAL(10, 7),
     longitude DECIMAL(10, 7),
     altitude FLOAT,

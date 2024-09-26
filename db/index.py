@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 from time import sleep
 #
-from seeder import get_random_telemetry
+from db.seeder import get_random_telemetry
 
 class DatabaseManager:
     def __init__(self, host, user, password, database):
@@ -34,10 +34,9 @@ class DatabaseManager:
                 INSERT INTO telemetry_data (
                     timestamp, latitude, longitude, altitude, temperature, humidity, pressure,
                     accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z, mag_x, mag_y, mag_z
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ) VALUES (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 self.cursor.execute(insert_query, (
-                    telemetry_data['timestamp'],
                     telemetry_data['latitude'],
                     telemetry_data['longitude'],
                     telemetry_data['altitude'],
@@ -67,7 +66,7 @@ class DatabaseManager:
         for _ in range(num_records):
             telemetry_data = get_random_telemetry()
             self.insert_telemetry_data(telemetry_data)
-            sleep(2)
+            sleep(1)
         self.close()
 
     def close(self):
