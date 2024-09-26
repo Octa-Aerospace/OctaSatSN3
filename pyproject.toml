@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "octasat-sn3"
+version = "0.1.0"
+description = ""
+authors = ["None"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+rpi-gpio = "^0.7.1"
+smbus = "^1.1.post2"
+imusensor = "^1.0.1"
+pyserial = "^3.5"
+pynmea2 = "^1.19.0"
+adafruit-blinka = "^8.47.0"
+adafruit-circuitpython-bme280 = "^2.6.25"
+adafruit-circuitpython-rfm9x = "^2.2.16"
+mysql-connector-python = "^9.0.0"
+pytz = "^2024.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

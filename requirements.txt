@@ -9,3 +9,5 @@ pynmea2
 board
 RPi.GPIO
 sys
+python-dotenv
+mysql-connector-python
