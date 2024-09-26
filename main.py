@@ -1,8 +1,7 @@
 import os
-import csv
+import pytz
 from time import sleep
 from datetime import datetime
-import pytz
 from dotenv import load_dotenv
 #
 from db.index import DatabaseManager
@@ -57,22 +56,22 @@ class OctaSat:
 
         temperature, humidity, pressure, altitude = self.bme280.get_packed_data()
         self.data = {
-            timestamp: datetime.now(self.timezone),
-            latitude: -1,
-            longitude: -1,
-            altitude: altitude,
-            temperature: temperature,
-            humidity: humidity,
-            pressure: pressure,
-            accel_x: 0,
-            accel_y: 0,
-            accel_z: 0,
-            gyro_x: 0,
-            gyro_y: 0,
-            gyro_z: 0,
-            mag_x: 0,
-            mag_y: 0,
-            mag_z: 0
+            'timestamp': datetime.now(self.timezone),
+            'latitude': -1,
+            'longitude': -1,
+            'altitude': altitude,
+            'temperature': temperature,
+            'humidity': humidity,
+            'pressure': pressure,
+            'accel_x': 0,
+            'accel_y': 0,
+            'accel_z': 0,
+            'gyro_x': 0,
+            'gyro_y': 0,
+            'gyro_z': 0,
+            'mag_x': 0,
+            'mag_y': 0,
+            'mag_z': 0
         }
     
     def dummy_read(self):
