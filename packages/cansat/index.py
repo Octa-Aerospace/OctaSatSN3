@@ -4,7 +4,6 @@ from time import sleep
 from datetime import datetime
 from dotenv import load_dotenv
 #
-from db.index import DatabaseManager
 # from modules.Camera import Camera
 # from modules.GY91 import GY91
 # from modules.GPS import GPS
@@ -26,14 +25,7 @@ class OctaSat:
         if not self.dummy:
             self.setup_button()
 
-        self.db = DatabaseManager(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PWD"),
-            database=os.getenv("DB_NAME")
-        )
         self.db.connect()
-
 
     def setup_button(self):
         GPIO.setup(self.BUTTON_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
