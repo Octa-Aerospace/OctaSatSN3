@@ -11,7 +11,7 @@ from db.index import DatabaseManager
 
 load_dotenv()
 
-global dummy; dummy = True # TODO: it would be cool to receive this as a parsed argv
+global dummy; dummy = False # TODO: it would be cool to receive this as a parsed argv
 
 class OctaSat:
     def __init__(self, dummy=False):
