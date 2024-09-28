@@ -2,6 +2,5 @@ wheel
 pytz
 python-dotenv
 mysql-connector-python
-board
 adafruit-circuitpython-rfm9x
 adafruit-circuitpython-bme280
