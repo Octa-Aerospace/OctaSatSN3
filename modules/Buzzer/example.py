@@ -65,7 +65,7 @@ header = '[Note]\t[Frequency]\t[Duration]'+'\n------\t-----------\t----------'
 printcount = 0
 
 def goodbye(msg = ''):
-        print(msg + '\n\nDone! Have fun. Like. Comment below. Kill yourself.')
+        print(msg + '\n\nDone! Have fun.')
         exit()
 
 def play_song(song):
